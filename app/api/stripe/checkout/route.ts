@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
 import { users } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
-import { stripe, STRIPE_PRICE_ID } from '@/lib/stripe'
+import { getStripe, STRIPE_PRICE_ID } from '@/lib/stripe'
 
 export async function POST(request: Request) {
   const { userId } = await auth()
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
 
   let customerId = profile.stripeCustomerId
   if (!customerId) {
-    const customer = await stripe.customers.create({
+    const customer = await getStripe().customers.create({
       email: profile.email,
       metadata: { userId: profile.id },
     })
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     await db.update(users).set({ stripeCustomerId: customerId }).where(eq(users.id, profile.id))
   }
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     customer: customerId,
     line_items: [{ price: STRIPE_PRICE_ID, quantity: 1 }],
     mode: 'subscription',

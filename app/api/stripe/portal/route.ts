@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
 import { users } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 
 export async function POST(request: Request) {
   const { userId } = await auth()
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
 
   const origin = request.headers.get('origin') ?? 'http://localhost:3000'
 
-  const session = await stripe.billingPortal.sessions.create({
+  const session = await getStripe().billingPortal.sessions.create({
     customer: profile.stripeCustomerId,
     return_url: `${origin}/dashboard/billing`,
   })
