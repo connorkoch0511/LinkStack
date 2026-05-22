@@ -108,11 +108,8 @@ export default function DashboardClient({ profile, links: initialLinks }: Props)
             <CreditCard size={18} />
           </Link>
           <UserButton
-            afterSignOutUrl="/"
             appearance={{
-              elements: {
-                avatarBox: 'w-8 h-8',
-              },
+              elements: { avatarBox: 'w-8 h-8' },
             }}
           />
         </div>
